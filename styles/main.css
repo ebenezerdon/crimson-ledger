@@ -1,0 +1,44 @@
+/* styles/main.css - additional custom styles complementing Tailwind utilities */
+
+html,body {
+  height: 100%;
+}
+
+/* Ensure buttons and interactive elements are clearly clickable on small screens */
+button, .btn-primary, .btn-secondary {
+  min-height: 40px;
+}
+
+/* Make inputs more distinct and consistent across browsers */
+input, select, textarea {
+  background: #fff;
+  border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+input::placeholder, textarea::placeholder { color: #9ca3af; }
+
+/* Table visuals */
+#txTable thead th { padding: 12px 8px; }
+#txBody td { padding: 12px 8px; vertical-align: middle; }
+
+/* Card and spacing polish */
+.card { background: white; }
+
+/* Bar chart container fallback styling */
+#barChart { background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.9)); }
+
+/* Help modal visible state */
+#helpModal .bg-black\/40 { transition: opacity 200ms ease; }
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+  .type-btn { font-size: 14px; padding-top: 10px; padding-bottom: 10px; }
+  #txTable { min-width: 600px; }
+}
+
+/* Make clickable areas obvious */
+.action-btn { cursor: pointer; }
+
+/* Accessibility focus ring */
+:focus { outline: 3px solid rgba(220,38,38,0.12); outline-offset: 2px; }

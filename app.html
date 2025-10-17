@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Crimson Ledger - App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles/main.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+  <header class="bg-white shadow-sm sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-lg bg-red-600 flex items-center justify-center text-white">CL</div>
+          <div class="text-lg font-semibold">Crimson Ledger</div>
+        </a>
+        <div class="ml-4 text-sm text-gray-500">Personal budget tracker</div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="exportBtn" class="bg-white border border-gray-200 px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-50">Export JSON</button>
+        <button id="importBtn" class="bg-white border border-gray-200 px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-50">Import</button>
+        <a href="#" id="helpOpen" class="inline-flex items-center bg-red-600 text-white px-4 py-2 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-200">Help</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Left column: Add transaction, quick stats -->
+      <div class="lg:col-span-1">
+        <div class="card bg-white">
+          <h3 class="text-lg font-semibold mb-3">Add transaction</h3>
+          <form id="txForm" class="space-y-3" aria-label="Add transaction form">
+            <div>
+              <label class="block text-sm text-gray-600">Type</label>
+              <div class="mt-1 flex gap-2">
+                <button type="button" data-type="income" class="type-btn flex-1 py-2 rounded-md bg-red-50 text-red-600 border border-red-100">Income</button>
+                <button type="button" data-type="expense" class="type-btn flex-1 py-2 rounded-md bg-white text-gray-700 border border-gray-200">Expense</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm text-gray-600">Category</label>
+              <select id="category" class="mt-1 w-full rounded-md border border-gray-200 bg-white text-sm p-3 shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-100 transition">
+                <option value="Salary">Salary</option>
+                <option value="Groceries">Groceries</option>
+                <option value="Transport">Transport</option>
+                <option value="Rent">Rent</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Misc">Misc</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm text-gray-600">Amount</label>
+              <input id="amount" type="number" step="0.01" min="0" placeholder="0.00" class="mt-1 w-full rounded-md border border-gray-200 bg-white p-3 text-right font-medium placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-100 transition" />
+            </div>
+
+            <div>
+              <label class="block text-sm text-gray-600">Date</label>
+              <input id="date" type="date" class="mt-1 w-full rounded-md border border-gray-200 bg-white p-3 text-sm placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-100 transition" />
+            </div>
+
+            <div>
+              <label class="block text-sm text-gray-600">Note</label>
+              <input id="note" type="text" class="mt-1 w-full rounded-md border border-gray-200 bg-white p-3 text-sm placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-100 transition" placeholder="Optional note" />
+            </div>
+
+            <div class="flex gap-2">
+              <button id="addTx" type="submit" class="bg-red-600 text-white px-6 py-3 rounded-md text-lg font-medium shadow-sm flex-1 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-200">Add Transaction</button>
+              <button id="clearForm" type="button" class="bg-white border border-gray-200 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-50">Clear</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card bg-gray-50 mt-6">
+          <h4 class="font-semibold">Quick totals</h4>
+          <div class="mt-3 grid grid-cols-3 gap-3 text-center">
+            <div>
+              <div class="text-xs text-gray-500">Income</div>
+              <div id="totalIncome" class="text-red-600 font-semibold text-lg">$0.00</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">Expenses</div>
+              <div id="totalExpense" class="text-gray-700 font-semibold text-lg">$0.00</div>
+            </div>
+            <div>
+              <div class="text-xs text-gray-500">Balance</div>
+              <div id="balance" class="font-semibold text-lg">$0.00</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Middle: transaction list -->
+      <div class="lg:col-span-2">
+        <div class="card bg-white">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold">Transactions</h3>
+            <div class="flex items-center gap-2">
+              <input id="search" class="rounded-md border border-gray-200 bg-white p-2 text-sm placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-100 transition" placeholder="Search notes, category" />
+              <select id="filterMonth" class="rounded-md border border-gray-200 bg-white p-2 text-sm placeholder-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-100 transition">
+                <option value="all">All months</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-4 overflow-auto">
+            <table class="w-full text-left min-w-[640px]" id="txTable" aria-live="polite">
+              <thead class="text-xs text-gray-500 uppercase tracking-wide">
+                <tr>
+                  <th class="py-2">Date</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th class="text-right">Amount</th>
+                  <th>Note</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="txBody" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card bg-gray-50 mt-6">
+          <h3 class="font-semibold">Monthly summary</h3>
+          <div class="mt-4 flex flex-col lg:flex-row gap-6 items-start">
+            <div class="flex-1">
+              <div id="barChart" class="w-full h-48 bg-white rounded-md p-3 shadow-inner" aria-hidden="false"></div>
+            </div>
+            <div class="w-full lg:w-64">
+              <div class="text-sm text-gray-600">Spending by category</div>
+              <div id="categoryList" class="mt-3 space-y-2"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <div id="helpModal" class="fixed inset-0 hidden items-center justify-center z-50">
+      <div id="helpOverlay" class="absolute inset-0 bg-black/40" tabindex="-1" role="button"></div>
+      <div class="bg-white rounded-xl shadow-2xl max-w-xl w-full p-6 z-10">
+        <div class="flex items-start justify-between">
+          <h4 class="text-lg font-semibold">Help</h4>
+          <button id="helpClose" class="text-gray-500">Close</button>
+        </div>
+        <p class="mt-3 text-sm text-gray-600">Add incomes and expenses. Use the filter and search to find entries. Data is saved locally in your browser.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="scripts/helpers.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+</html>
