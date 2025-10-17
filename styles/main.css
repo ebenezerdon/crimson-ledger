@@ -42,3 +42,9 @@ input::placeholder, textarea::placeholder { color: #9ca3af; }
 
 /* Accessibility focus ring */
 :focus { outline: 3px solid rgba(220,38,38,0.12); outline-offset: 2px; }
+/* Ensure content isn't clipped by mobile browser chrome / notches. Add the safe-area inset to header spacing while keeping existing Tailwind padding. */
+header {
+  /* env(safe-area-inset-top) adds extra top padding on devices with a notch; fallback to 0px on unsupported browsers */
+  padding-top: env(safe-area-inset-top, 0px);
+  box-sizing: border-box;
+}
