@@ -42,6 +42,16 @@ input::placeholder, textarea::placeholder { color: #9ca3af; }
 
 /* Accessibility focus ring */
 :focus { outline: 3px solid rgba(220,38,38,0.12); outline-offset: 2px; }
+/* Move the top navigation slightly upward on medium+ screens so the hero/top content doesn't appear clipped.
+   This uses a conservative translate and reduced bottom margin to keep visual spacing consistent. */
+@media (min-width: 768px) {
+  header nav {
+    margin-bottom: 0.25rem; /* reduce spacing at md+ */
+    transform: translateY(-12px); /* lift the navbar up */
+    will-change: transform;
+  }
+}
+
 /* Ensure content isn't clipped by mobile browser chrome / notches. Add the safe-area inset to header spacing while keeping existing Tailwind padding. */
 header {
   /* env(safe-area-inset-top) adds extra top padding on devices with a notch; fallback to 0px on unsupported browsers */
